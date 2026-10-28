@@ -4,6 +4,7 @@ import os
 
 import streamlit as st
 from groq import Groq
+from pypdf import PdfReader
 
 # ---------- SETUP ----------
 
@@ -26,9 +27,17 @@ def list_files() -> list:
 
 
 def read_file(filename: str) -> str:
-    """Read a file from the docs folder."""
+    """Read a .txt or .pdf file from the docs folder."""
     safe_name = os.path.basename(filename)
     path = os.path.join(DOCS_FOLDER, safe_name)
+
+    if safe_name.lower().endswith(".pdf"):
+        reader = PdfReader(path)
+        text = "\n".join(page.extract_text() or "" for page in reader.pages)
+        if not text.strip():
+            return "Error: this PDF has no readable text (it may be a scanned image)."
+        return text
+
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
@@ -53,7 +62,7 @@ tools = [
         "type": "function",
         "function": {
             "name": "list_files",
-            "description": "List the names of all available documents. Always call this first.",
+            "description": "List the names of all available documents (.txt and .pdf). Always call this first.",
             "parameters": {"type": "object", "properties": {}},
         },
     },
@@ -61,11 +70,11 @@ tools = [
         "type": "function",
         "function": {
             "name": "read_file",
-            "description": "Read the full text of one document by its file name.",
+            "description": "Read the full text of one document (.txt or .pdf) by its file name.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "filename": {"type": "string", "description": "Exact file name, e.g. invoice_001.txt"}
+                    "filename": {"type": "string", "description": "Exact file name, e.g. invoice_001.pdf"}
                 },
                 "required": ["filename"],
             },
@@ -104,6 +113,7 @@ SYSTEM_PROMPT = (
     "Never guess numbers; read the files first. "
     "When the user asks for a report, table or file, you MUST call save_report to create "
     "the real file. Do not just print the table as text. "
+    "If a file cannot be read, tell the user which one. "
     "If the information isn't in the documents, say so."
 )
 
@@ -167,12 +177,11 @@ def run_agent(question):
 
 st.set_page_config(page_title="Invoice Agent", page_icon="📄")
 st.title("📄 Invoice Document Agent")
-st.caption("Upload invoices, ask questions, and download Excel-ready reports.")
+st.caption("Upload invoices (.txt or .pdf), ask questions, and download Excel-ready reports.")
 
-# Sidebar: upload documents and download reports
 with st.sidebar:
     st.header("1. Upload invoices")
-    uploaded = st.file_uploader("Text files (.txt)", type=["txt"], accept_multiple_files=True)
+    uploaded = st.file_uploader("Text or PDF files", type=["txt", "pdf"], accept_multiple_files=True)
     if uploaded:
         for file in uploaded:
             with open(os.path.join(DOCS_FOLDER, os.path.basename(file.name)), "wb") as f:
@@ -191,7 +200,6 @@ with st.sidebar:
         with open(os.path.join(OUTPUT_FOLDER, name), "rb") as f:
             st.download_button(f"⬇️ {name}", f.read(), file_name=name, key=name)
 
-# Chat area
 if "chat" not in st.session_state:
     st.session_state.chat = []
 
@@ -214,4 +222,4 @@ if question:
         st.markdown(answer)
 
     st.session_state.chat.append(("assistant", answer))
-    st.rerun()  # refresh the sidebar so new reports appearstreamlit run app.py
+    st.rerun()

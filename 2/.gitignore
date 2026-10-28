@@ -1,0 +1,11 @@
+# Virtual environment
+.venv/
+
+# Python cache files
+__pycache__/
+
+# Secret keys
+.env
+
+# Database (anyone can rebuild it from the docs)
+db/
