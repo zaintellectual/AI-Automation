@@ -1,0 +1,9 @@
+INVOICE #001
+Date: 2026-10-15
+Client: Ali Traders, Lahore
+Items:
+- Website design: 45000 PKR
+- Hosting (1 year): 12000 PKR
+- Logo design: 8000 PKR
+Status: UNPAID
+Due date: 2026-11-01

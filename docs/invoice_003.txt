@@ -1,0 +1,8 @@
+INVOICE #003
+Date: 2026-10-20
+Client: Fatima Boutique, Islamabad
+Items:
+- Online store setup: 60000 PKR
+- Product photography: 10000 PKR
+Status: UNPAID
+Due date: 2026-11-10

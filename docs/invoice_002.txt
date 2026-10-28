@@ -1,0 +1,8 @@
+INVOICE #002
+Date: 2026-10-18
+Client: Hassan Electronics, Karachi
+Items:
+- Mobile app development: 120000 PKR
+- Maintenance (3 months): 15000 PKR
+Status: PAID
+Due date: 2026-10-30

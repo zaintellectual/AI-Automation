@@ -1,0 +1,19 @@
+# Virtual environment
+.venv/
+
+# Python cache files
+__pycache__/
+
+# Secret keys
+.env
+
+# Generated reports
+output/
+
+# Practice files (kept on my PC only)
+hello.py
+firstcall.py
+listmodel.py
+chatbot.py
+agent.py
+aentloop.py
